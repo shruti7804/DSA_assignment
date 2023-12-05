@@ -1,0 +1,210 @@
+#include<iostream>
+#include<stdlib.h>
+using namespace std;
+
+struct tree{
+    int data;
+    tree *left;
+    tree *right;
+};
+
+tree * insert(tree *root,int data){
+ 
+    if(root==NULL){
+        tree *temp=new tree;
+        temp->data=data;
+        temp->left=NULL;
+        temp->right=NULL;
+        return temp;
+    }
+
+    if(data > (root->data)){
+         
+            root->right=insert(root->right,data);
+    }
+
+    else if(data < (root->data)){
+   
+            root->left=insert(root->left,data);
+    }
+    return root;
+}
+
+
+tree * getmin(tree *r){
+    while(r->left != NULL){
+        r=r->left;
+    }
+    return r;
+}
+
+tree * search(tree * root,int data){
+    if(root==NULL){
+        cout<<"element not found"<<endl;
+        return NULL;
+    }
+    
+    if(data > root->data){
+        return search(root->right,data);
+    }
+    else if(data < root->data){
+        return search(root->left,data);
+    }
+    else{
+        cout<<"element is found..."<<endl;
+        return root;
+    }
+
+return root;
+}
+
+
+tree * del(tree *root , int data){
+    
+    tree * temp;
+    if(root==NULL){
+        cout<<"element not found"<<endl;
+    }
+    else if(data < (root->data)){
+        root->left=del(root->left,data);
+    }
+    else if(data> (root->data)){
+        root->right=del(root->right,data);
+    }
+    else{
+        if(root->right && root->left){
+            temp=getmin(root->right);
+            root->data=temp->data;
+
+            root->right=del(root->right,temp->data);
+        }
+        else{
+            temp=root;
+            if(root->left==NULL){
+                root=root->right;
+            }
+            else if(root->right==NULL){
+                root=root->left;
+                free(temp);
+            }
+        }
+        return root;
+    }
+
+
+}
+ 
+
+
+
+void display(tree *root)
+{
+    tree*temp;
+    temp=root;
+    if(temp!=NULL)
+    {
+        display(temp->left);
+        cout<<" "<<temp->data;
+        display(temp->right);
+    }
+
+}
+
+
+void mirror(struct tree* node)
+{
+    if (node == NULL)
+        return;
+    else {
+        struct tree* temp;
+        
+        mirror(node->left);
+        mirror(node->right);
+ 
+        temp = node->left;
+        node->left = node->right;
+        node->right = temp;
+    }
+   
+} 
+ 
+ 
+bool printLevel(tree* root, int level)
+{
+    if (root == NULL) {
+        return false;
+    }
+ 
+    if (level == 1){
+        cout << root->data << " ";
+        return true;
+    }
+ 
+    bool left = printLevel(root->left, level - 1);
+    bool right = printLevel(root->right, level - 1);
+ 
+    return left || right;
+}
+ 
+void levelOrderTraversal(tree* root){
+   
+    int level = 1;
+ 
+    while (printLevel(root, level)) {
+        level++;
+    }
+}
+
+int main(){
+
+
+
+tree * root=NULL,* temp,* rev;
+int x;
+
+do{
+
+
+cout<<"chose operation\n1. Insert\n2. Delete\n3. Search\n4. Mirror image\n5. Display\n6. Display level wise\n7.exit"<<endl;
+cin>>x;
+
+
+switch(x){
+    case 1:
+        
+        int n;
+        cout<<"enter the number to insert :";
+        cin>>n;
+        root=insert(root,n);
+        break;
+    case 2:
+        int m;
+        cout<<"enter the number to del :";
+        cin>>m;
+        root=del(root,m);
+        
+        break;
+    case 3:
+        int j;
+        cout<<"enter the number to search :";
+        cin>>j;
+        temp=search(root,j);
+        break;
+    case 4:
+        mirror(root);
+        break;
+    case 5:
+    
+       display(root);
+       cout<<endl;
+        break;    
+    case 6:
+        levelOrderTraversal(root);
+        break;    
+
+
+}
+}while(x!=7);
+
+return 0;
+}
