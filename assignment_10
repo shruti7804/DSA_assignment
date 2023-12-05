@@ -1,0 +1,184 @@
+ #include <iostream>
+#include<fstream>
+#include<iomanip>
+#include<cstring>
+using namespace std;
+
+class student{
+    public: 
+    int roll;
+    string name,address;
+    char division;
+    
+    student (){
+    }
+    
+    student(int roll,string name,string address,char division){
+        this->roll=roll;
+        this->name=name;
+        this->address=address;
+        this->division=division;
+    }
+    
+    int get_roll(){
+        return this->roll;
+    }
+    
+    void display(){
+        cout<<"name : "<<this->name<<endl;
+        cout<<"roll no. : "<<this->roll<<endl;
+        cout<<"address : "<<this->address<<endl;
+        cout<<"division : "<<this->division<<endl;
+    }
+};
+
+//=======================================================================
+
+class fileop{
+    
+    fstream file;
+    public :
+    
+    fileop(char * file_name){
+        file.open("student_records.dat",ios::in|ios::out|ios::ate|ios::binary);
+    }
+    
+    void insert_record(int roll,string name,string address,char division){
+        
+        student s1(roll,name,address,division);
+        file.seekp(0,ios::end);
+        file.write((char *)&s1,sizeof(student));
+        file.clear();
+        
+    }
+    
+    void dispaly_all(){
+        
+        student s1;
+        file.seekg(0,ios::beg);
+        
+        while(file.read((char*)&s1,sizeof(student))){
+            s1.display();
+        }
+        file.clear();
+    }
+    
+    void display_record(int roll){
+        student s1;
+        file.seekg(0,ios::beg);
+        bool flag=false;
+        
+        while(file.read((char*)&s1,sizeof(student))){
+            
+            if(s1.get_roll()==roll){
+                s1.display();
+                flag=true;
+                break;
+            }
+        }
+        
+        if(flag==false)cout<<"record not present ...\n";
+        file.clear();
+    }
+    
+    void delet_record(int roll){
+        ofstream outfile("new.dat",ios::binary);
+        
+        student s1;
+        file.seekg(0,ios::beg);
+        bool flag=false;
+        
+        while(file.read((char*)&s1,sizeof(student))){
+            
+            if(s1.get_roll()==roll){
+                flag=true;
+                continue;
+            }
+            outfile.write((char*)&s1,sizeof(student));
+        }
+        if(flag==false){
+            cout<<"record not present !!!\n";
+        }
+        file.close();
+        outfile.close();
+        remove("student_records.dat");
+        rename("new.dat","student_records.dat");
+        
+        file.open("new.dat",ios::in|ios::out|ios::ate|ios::binary);
+          cout<<"record deleted \n";  
+            
+    }
+    
+    ~fileop(){
+        file.close();
+        cout<<"file closed\n";
+    }
+};
+
+int main() {
+    ofstream newfile("student_records.dat",ios::app|ios::binary);
+    newfile.close();
+    fileop file((char *)"student_records.dat");
+    
+    int roll;
+    string name,address;
+    char division;
+    
+    
+    int ch;
+    
+    do{
+        cout<<"1.add new record\n2.display all records\n3.search record by roll number\n4.delete record\n5.exit\nCHOOSE OPERATION : ";
+        cin>>ch;
+        
+        switch(ch){
+            case 1:
+            
+            cout<<"enter name : ";
+            cin>>name;
+            cout<<"enter roll number : ";
+            cin>>roll;
+            cout<<"enter address : ";
+            cin>>address;
+            cout<<"enter division : ";
+            cin>>division;
+            
+            file.insert_record(roll,name,address,division);
+            cout<<"record inserted \n";
+            
+            break;
+            case 2:
+            
+            cout<<endl<<setw(5)<<"ROLL"<<setw(20)<<"NAME"<<setw(5)<<"divison"<<setw(10)<<"ADDRESS";
+            
+            break;
+            case 3:
+            int r;
+            cout<<"enter roll number to search : ";
+            cin>>r;
+            file.display_record(r);
+            
+            break;
+            case 4:
+             int d;
+            cout<<"enter roll number to delet : ";
+            cin>>d;
+            
+            file.delet_record(d);
+
+            break;
+            
+            case 5 :
+            break;
+        };
+        
+        
+        
+    }while(ch!=5);
+    
+    
+    
+    
+    
+    return 0;
+}
