@@ -1,0 +1,59 @@
+#include <iostream>
+#include <cstring>
+#define MAX 1000000
+using namespace std;
+
+int main() {
+    int v, e;
+    cout << "enter number of vertex :";
+    cin >> v;
+    cout << "enter number of edges :";
+    cin >> e;
+    int G[v][v] = {0};
+    int visited[v];
+
+    memset(visited, false, sizeof(visited));
+    visited[0] = true;
+
+    for (int i = 0; i < e; i++) {
+        int a, b, w;
+        cout << "edge " << i + 1 << ":" << endl;
+        cout << "enter start :";
+        cin >> a;
+        cout << "enter end :";
+        cin >> b;
+        cout << "enter weight of the edge:";
+        cin >> w;
+        G[a][b] = w;
+        G[b][a] = w;  // Assuming the graph is undirected
+    }
+
+    int op_edge = 0;
+    int k;
+
+    while (op_edge < v - 1) {
+        int minimum = MAX;
+        int x, y;
+
+        for (int i = 0; i < v; i++) {
+            if (visited[i]) {
+                for (int j = 0; j < v; j++) {
+                    if (G[i][j] != 0 && !visited[j]) {
+                        if (G[i][j] < minimum) {
+                            minimum = G[i][j];
+                            x = i;
+                            y = j;
+                            k = minimum;
+                        }
+                    }
+                }
+            }
+        }
+
+        visited[y] = true;
+        cout << x << "->" << y << ":" << k << endl;
+        op_edge++;
+    }
+
+    return 0;
+}
