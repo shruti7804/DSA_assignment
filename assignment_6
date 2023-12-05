@@ -1,0 +1,171 @@
+#include <iostream>
+using namespace std;
+
+struct tree{
+int data;
+tree * left;
+tree * right;
+bool rflag;
+bool lflag;
+};
+  
+
+
+tree * insert(tree * root,int data){
+    
+    tree * temp=root;
+    tree * parent=NULL;
+    
+    while (temp != NULL) 
+    { 
+    parent = temp;
+    
+    if (data < temp->data) 
+        { 
+            if (temp -> lflag == false) 
+                temp = temp-> left; 
+            else
+                break; 
+        } 
+    
+        else
+        { 
+            if (temp -> rflag == false) 
+                temp = temp -> right; 
+            else
+                break; 
+        } 
+    }
+    
+    tree * newnode=new tree;
+    newnode->data=data;
+    newnode->rflag=newnode->lflag=true;
+    
+    if (parent == NULL) 
+    { 
+        root = newnode; 
+        newnode -> left = NULL; 
+        newnode -> right = NULL; 
+    } 
+    
+   else if (data < (parent -> data)) 
+    { 
+        newnode -> left = parent -> left; 
+        newnode -> right = parent; 
+        parent -> lflag = false; 
+        parent -> left = newnode; 
+    } 
+    else
+    { 
+        newnode -> left = parent; 
+        newnode -> right = parent -> right; 
+        parent -> rflag = false; 
+        parent -> right = newnode; 
+    } 
+  
+    return root; 
+   
+    
+} 
+
+
+ struct tree *inorderSuccessor(struct tree *ptr) 
+{ 
+    
+    if (ptr -> rflag == true) 
+        return ptr->right; 
+  
+    
+    ptr = ptr -> right; 
+    
+    while (ptr -> lflag == false) 
+        ptr = ptr -> left; 
+    return ptr; 
+} 
+
+void inorder(tree * root){
+    tree * temp=root;
+    
+    if(temp==NULL){
+        cout<<"tree is empty !!!"<<endl;
+        return ;
+    }
+    
+    while(temp->lflag==false){
+        temp=temp->left;
+    }
+    
+     while (temp != NULL) 
+    { 
+       cout<<temp -> data<<"  "; 
+        temp = inorderSuccessor(temp); 
+    } 
+}
+
+void preorder(tree *root)
+{
+    if (root==NULL)
+    {
+        cout <<"tree is empty \n";
+    }
+    else
+    {
+        while(root!=NULL)
+        {
+            cout <<root->data<<"  ";
+            if (root->lflag==false)
+            {
+                root=root->left;
+            }
+            else if (root->rflag==false)
+            {
+                root=root->right;
+            }
+            else
+            {
+                while(root!=NULL && root->rflag ==true)
+                {
+                    root=inorderSuccessor(root);
+                }
+                if (root!=NULL)
+                {
+                    root=root->right;
+                }
+            }
+        }
+    }
+
+}
+
+int main() {
+    struct tree *root = NULL; 
+    int x;
+    
+    do{
+        cout<<"1.insert\n2.in-order traversal\n3.pre-order traversal\n4.exit\nCHOOSE OPERATION:"<<endl;
+        cin>>x;
+        switch(x){
+            case 1:
+                int n;
+                cout<<"enter number to insert:";
+                cin>>n;
+                root=insert(root,n);
+                break;
+            case 2:
+                inorder(root);
+                cout<<endl;
+                break;
+            case 3:
+                preorder(root);
+                cout<<endl;
+                break;
+            case 4:
+                break;
+        };
+        
+    }while(x!=4);
+    
+	 
+ 
+    return 0;
+}
