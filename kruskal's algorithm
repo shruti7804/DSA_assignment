@@ -1,0 +1,89 @@
+ #include <iostream>
+#include<algorithm>
+using namespace std;
+
+class edge{
+
+    public:
+    int start;
+    int end;
+    int weight;
+  
+  
+};
+
+bool compare(edge e1,edge e2){
+    return e1.weight < e2.weight;
+}
+
+int find_parent(int v,int *parent){
+   if(parent[v]==v) return v;
+   
+   return find_parent(parent[v],parent);
+}
+
+void kruskal(edge * arr,int e,int n){
+    sort(arr,arr+e,compare);
+    edge * op=new edge[n-1];
+    
+    int op_edges=0;
+    int i=0;
+    
+    int * parent=new int[n];
+    
+    for(int j=0;j<n;j++){
+        parent[j]=j;
+    }
+    
+    
+    while(op_edges != n-1){
+       
+       edge current=arr[i]; 
+        
+        int str_parent=find_parent(current.start,parent);
+        int end_parent=find_parent(current.end,parent);
+        
+        if(str_parent != end_parent){
+            op[op_edges]=current;
+            op_edges++;
+            parent[str_parent]=end_parent; 
+        }
+         
+        i++;
+    }
+    cout<<endl;
+    cout<<"shortest path is :"<<endl;
+    for(int k=0;k<n-1;k++){
+        if(op[k].start< op[k].end){
+        cout<<op[k].start<<"->"<<op[k].end<<"="<<op[k].weight<<endl;
+        }
+        else{
+            cout<<op[k].end<<"->"<<op[k].start<<"="<<op[k].weight<<endl; 
+        }
+    }
+}
+
+
+int main() {
+    int n;
+    cout<<"enter number of nodes :";
+   cin>>n;
+   int e;
+   cout<<"enter number of edges :";
+   cin>>e;
+   edge *arr=new edge[e];
+   
+   for(int i=0;i<e;i++){
+       
+       cout<<"enter starting point :";
+       cin>>arr[i].start;
+       cout<<"enter end point :";
+       cin>>arr[i].end;
+       cout<<"enter weight of edge :";
+       cin>>arr[i].weight;
+   }
+   
+   kruskal(arr,e,n);
+   
+    return 0;
+}
