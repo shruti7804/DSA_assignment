@@ -1,0 +1,343 @@
+#include <iostream>
+#include <cstring>
+#include <stack>
+using namespace std; 
+
+
+struct tree{
+    char data;
+    tree *left;
+    tree *right;
+};
+
+tree * setval( char n){
+   tree *temp = new tree;
+    temp->data=n;
+    temp->left=NULL;
+    temp->left=NULL;
+    return temp;
+}
+
+void makeleft(struct tree *root,struct tree *newnode){
+    root->left=newnode;
+}
+
+void makeright(struct tree *root,struct tree *newnode){
+     root->right=newnode;
+}
+
+
+bool isop(char c)
+{
+    if (c == '+' || c == '-' || c == '*' || c == '/' || c == '^')
+    {
+        return true;
+    }
+
+    return false;
+}
+
+
+
+tree *  post_tree(char exp[]){
+   stack<tree *> s;
+    tree *root,*c1,*c2;
+    
+    for(int i=0;i<strlen(exp);i++){
+    
+    if(isop(exp[i])){
+        root=setval(exp[i]);
+        
+        c1=s.top();
+        s.pop();
+        
+        c2=s.top();
+        s.pop();
+        
+        root->right = c1;
+        root->left = c2;
+        
+        s.push(root);
+        
+    }    
+     
+    else{
+        root=setval(exp[i]);
+        s.push(root);
+    }    
+        
+    }
+    return root;        
+}
+
+ 
+tree *  pre_tree(char exp[]){
+   stack<tree *> s;
+    tree *root,*c1,*c2;
+    
+    for(int i=0;i<strlen(exp);i++){
+    
+    if(isop(exp[i])){
+        root=setval(exp[i]);
+        
+        c1=s.top();
+        s.pop();
+        
+        c2=s.top();
+        s.pop();
+        
+        root->right = c2;
+        root->left = c1;
+        
+        s.push(root);
+        
+    }    
+     
+    else{
+        root=setval(exp[i]);
+        s.push(root);
+    }    
+        
+    }
+    return root;        
+}
+
+
+void recursive_inorder(tree *root)
+{
+    tree*temp;
+    temp=root;
+    if(temp!=NULL)
+    {
+        recursive_inorder(temp->left);
+        cout<<" "<<temp->data;
+        recursive_inorder(temp->right);
+    }
+
+}
+
+
+
+void recursive_preorder(tree *root)
+{
+    tree*temp;
+    temp=root;
+    if(temp!=NULL)
+    {
+        cout<<" "<<temp->data;
+        recursive_preorder(temp->left);
+        recursive_preorder(temp->right);
+    }
+
+}
+
+
+void recursive_postorder(tree*root)
+{
+    tree*temp;
+    temp=root;
+    if(temp!=NULL)
+    {
+        recursive_postorder(temp->left);
+        recursive_postorder(temp->right);
+        cout<<" "<<temp->data;
+    }
+
+
+}
+
+
+
+
+
+
+void nonrecursive_inorder(tree *root)
+{
+
+    stack<tree *> s;
+
+    tree *current_node = root;
+
+
+
+    while (current_node != NULL || s.empty() == false)
+
+    {
+
+        while (current_node!= NULL)
+
+        {
+            s.push(current_node);
+            current_node=current_node->left;
+        }
+
+        current_node= s.top();
+        s.pop();
+        
+        cout<<current_node->data;
+        current_node=current_node->right;
+    }
+}
+
+
+
+void nonrecursive_preorder(tree *root)
+{
+     stack<tree *> s;
+    
+    s.push(root);
+    if (root == NULL)
+    {
+        return;
+    }
+
+    while (s.empty()==false)
+    {
+        tree *temp=s.top();
+        s.pop();
+        cout<<" "<<temp->data;
+
+        if (temp->right)
+        {
+            s.push(temp->right);
+        }
+
+        if (temp->left)
+        {
+            s.push(temp->left);
+        }
+    }
+
+}
+
+void nonrecursive_postorder(tree *root)
+{
+    if(root==NULL)
+    {
+        return;
+    }
+
+    stack<tree *>s1;
+    stack<tree *> s2;
+    s1.push(root);
+    tree *temp;
+
+    while(s1.empty()==false)
+    {
+        temp=s1.top();
+        s1.pop();
+        s2.push(temp);
+
+        if(temp->left)
+        {
+            s1.push(temp->left);
+        }
+
+        if(temp->right)
+        {
+            s1.push(temp->right);
+        }
+    }
+
+
+    while(!s2.empty())
+    {
+        temp=s2.top();
+        s2.pop();
+        cout<<" "<<temp->data;
+
+    }
+
+}
+
+
+
+
+
+int main() {
+    int k=0;
+    int x; 
+    char post[100]; 
+    char pre[100];
+    char reverse[100];
+    tree* root_address;
+    
+    do{
+     
+    cout<<"From which expression you want to construct binary expression tree?\n1.prefix expression\n2.postfix expression\n3.exit\nENTER CHOICE"<<endl;
+    cin>>x;
+    
+    switch(x){
+        case 1:
+            cout<<"enter prefix expression:";
+            cin>>pre;
+            
+            for(int j=strlen(pre)-1;j>=0;j--){
+                 reverse[k++]=pre[j];
+                 reverse[k]='\0';
+            }
+            
+            root_address=pre_tree(reverse);
+            
+            int y;
+            cout<<"In which manner you want to traverse the binary expression tree?\n1.recursively\n2.non recurcively\nENTER CHOICE"<<endl;
+            cin>>y;
+            switch(y){
+                case 1:
+                    cout<<"\nRecursive inorder is: ";
+                    recursive_inorder(root_address);
+                    cout<<"\nRecursive preorder is: ";
+                    recursive_preorder(root_address);
+                    cout<<"\nRecursive postorder is: ";
+                    recursive_postorder(root_address);
+                    cout<<endl;
+                    break;
+                case 2:
+                cout<<"\nRecursive inorder is: ";
+                    nonrecursive_inorder(root_address);
+                    cout<<"\nRecursive preorder is: ";
+                    nonrecursive_preorder(root_address);
+                    cout<<"\nRecursive postorder is: ";
+                    nonrecursive_postorder(root_address);
+                    cout<<endl;
+                    break;
+                    
+            };
+            break;
+        case 2: 
+            cout<<"enter postfix expression:";
+            cin>>post;
+            root_address=post_tree(post);
+            int z;
+            cout<<"In which manner you want to traverse the binary expression tree?\n1.recursively\n2.non recurcively\nENTER CHOICE"<<endl;
+            cin>>z;
+            switch(z){
+                case 1:
+                  cout<<"\nRecursive inorder is: ";
+                  recursive_inorder(root_address);
+                  cout<<"\nRecursive preorder is: ";
+                  recursive_preorder(root_address);
+                  cout<<"\nRecursive postorder is: ";
+                  recursive_postorder(root_address);
+                   cout<<endl; 
+                  break;
+                case 2:
+                  cout<<"\nRecursive inorder is: ";
+                  nonrecursive_inorder(root_address);
+                  cout<<"\nRecursive preorder is: ";
+                  nonrecursive_preorder(root_address);
+                  cout<<"\nRecursive postorder is: ";
+                  nonrecursive_postorder(root_address);
+                   cout<<endl; 
+                  break;
+                    
+           
+            break;
+            }; 
+ 
+    }
+    }
+    while(x!=3);
+    return 0;
+
+}
